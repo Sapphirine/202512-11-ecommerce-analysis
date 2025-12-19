@@ -1,0 +1,513 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>April 2020 Intelligence Report</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        :root {
+            --primary: #6366f1;
+            --secondary: #818cf8;
+            --glass-bg: rgba(15, 23, 42, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+            --chart-grid: rgba(255, 255, 255, 0.05);
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: #020617;
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+        }
+        .aurora-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 50% 0%, #172554 0%, #020617 60%);
+            z-index: -2;
+        }
+        .header {
+            width: 100%;
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(2, 6, 23, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--glass-border);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-sub);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+
+            .back-btn:hover {
+                color: #fff;
+            }
+
+        h1 {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+            color: #fff;
+        }
+
+        .tabs {
+            margin: 30px 0;
+            background: rgba(255,255,255,0.03);
+            padding: 4px;
+            border-radius: 12px;
+            display: inline-flex;
+            border: 1px solid var(--glass-border);
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-sub);
+            padding: 8px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+            .tab-btn:hover {
+                color: #fff;
+            }
+
+            .tab-btn.active {
+                background: var(--primary);
+                color: #fff;
+                box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
+            }
+
+        .container {
+            width: 100%;
+            max-width: 1100px;
+            padding: 0 20px;
+            display: none;
+            animation: slideUp 0.5s ease;
+        }
+
+            .container.active {
+                display: block;
+            }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .magic-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 30px;
+            position: relative;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            margin-bottom: 40px;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .chart-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .toggle-switch {
+            display: flex;
+            background: rgba(0,0,0,0.3);
+            border-radius: 20px;
+            padding: 2px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .toggle-option {
+            padding: 6px 16px;
+            font-size: 12px;
+            color: var(--text-sub);
+            cursor: pointer;
+            border-radius: 18px;
+            transition: 0.3s;
+        }
+
+            .toggle-option.active {
+                background: rgba(255,255,255,0.1);
+                color: #fff;
+                font-weight: 600;
+            }
+
+        .chart-wrapper {
+            position: relative;
+            height: 450px;
+            width: 100%;
+            display: none;
+        }
+
+            .chart-wrapper.active {
+                display: block;
+                animation: fadeIn 0.4s;
+            }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .stat-box {
+            background: rgba(255,255,255,0.03);
+            padding: 20px;
+            border-radius: 16px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .stat-num {
+            font-size: 24px;
+            font-weight: 700;
+            color: #fff;
+            margin-top: 8px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-sub);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="aurora-bg"></div>
+
+    <header class="header">
+        <a href="index.html" class="back-btn">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5m7 7l-7-7 7-7" /></svg>
+            Dashboard
+        </a>
+        <h1>April 2020 Analysis</h1>
+        <div style="width: 80px"></div>
+    </header>
+
+    <div class="tabs">
+        <button class="tab-btn active" onclick="showSection('overview')">Overview</button>
+        <button class="tab-btn" onclick="showSection('funnel')">Funnels & Behavior</button>
+        <button class="tab-btn" onclick="showSection('time')">Time Patterns</button>
+        <button class="tab-btn" onclick="showSection('model')">Modeling</button>
+    </div>
+
+    <div id="overview" class="container active">
+        <div class="magic-card">
+            <div class="chart-header">
+                <span class="chart-title">User Segmentation</span>
+            </div>
+            <div style="height: 350px; display:flex; justify-content:center;">
+                <canvas id="chart-pie"></canvas>
+            </div>
+            <div class="grid-2">
+                <div class="stat-box">
+                    <div class="stat-label">High Value / Risk</div>
+                    <div class="stat-num">17,667</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Churn Warning</div>
+                    <div class="stat-num">35,554</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="funnel" class="container">
+        <div class="magic-card">
+            <div class="chart-header">
+                <span class="chart-title" id="funnel-title">Conversion Funnel</span>
+                <div class="toggle-switch">
+                    <div class="toggle-option active" onclick="switchChart('funnel', 'funnel-view', 'Conversion Funnel')">Funnel</div>
+                    <div class="toggle-option" onclick="switchChart('funnel', 'top10-view', 'Top 10 Categories')">Top 10</div>
+                </div>
+            </div>
+
+            <div id="funnel-view" class="chart-wrapper active">
+                <canvas id="chart-funnel"></canvas>
+            </div>
+
+            <div id="top10-view" class="chart-wrapper">
+                <canvas id="chart-top10"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div id="time" class="container">
+        <div class="magic-card">
+            <div class="chart-header">
+                <span class="chart-title" id="time-title">Hourly Activity</span>
+                <div class="toggle-switch">
+                    <div class="toggle-option active" onclick="switchChart('time', 'hourly-view', 'Hourly Activity')">Hourly</div>
+                    <div class="toggle-option" onclick="switchChart('time', 'weekday-view', 'Weekday Trends')">Weekday</div>
+                </div>
+            </div>
+
+            <div id="hourly-view" class="chart-wrapper active">
+                <canvas id="chart-hourly"></canvas>
+            </div>
+
+            <div id="weekday-view" class="chart-wrapper">
+                <canvas id="chart-weekday"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div id="model" class="container">
+        <div class="magic-card">
+            <div class="chart-header">
+                <span class="chart-title">Feature Importance (Logistic Regression)</span>
+            </div>
+            <div class="chart-wrapper active">
+                <canvas id="chart-model"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // --- Configuration & Styling ---
+    Chart.defaults.color = '#94a3b8';
+    Chart.defaults.borderColor = 'rgba(255,255,255,0.05)';
+    Chart.defaults.font.family = "'Inter', sans-serif";
+
+    const colors = {
+        purple: '#6366f1',
+        purpleFade: 'rgba(99, 102, 241, 0.5)',
+        pink: '#ec4899',
+        blue: '#3b82f6',
+        green: '#10b981',
+        red: '#ef4444',
+        grey: '#334155'
+    };
+
+    // --- DATA FROM APRIL NOTEBOOK ---
+    const funnelData = [62291531, 3266887, 0, 966759]; // View, Cart, Remove, Purchase
+    const hourlyData = [557241, 759731, 1265043, 1981562, 2687194, 3217257, 3555718, 3821863, 3970108, 3967275, 3858148, 3696422, 3607173, 3609408, 3735707, 4137212, 4247156, 4064828, 3371177, 2345752, 1596159, 1004999, 818143, 649901];
+    const weekdayData = [8710793, 8709458, 11083575, 11378603, 8924721, 8996956, 8721071]; // Mon - Sun
+    const top10Labels = ["construction.tools.light", "appliances.personal.massager", "electronics.audio.headphone", "sport.bicycle", "appliances.kitchen.refrigerators", "apparel.shoes", "appliances.environment.vacuum", "electronics.clocks", "appliances.kitchen.toster", "furniture.kitchen.table"];
+    const top10Values = [370644, 37737, 37686, 37633, 24449, 22192, 21682, 18353, 13554, 13515];
+    const featureLabels = ["Count Cart", "Avg Price Cart", "Count View", "Avg Session", "Avg Price View"];
+    const featureValues = [1.983031, 0.599700, 0.260015, -0.115050, -0.754422];
+
+    // --- 1. PIE CHART (Segment) ---
+    new Chart(document.getElementById('chart-pie'), {
+        type: 'doughnut',
+        data: {
+            labels: ['High Risk/Value', 'Churn Warning'],
+            datasets: [{
+                data: [17667, 35554],
+                backgroundColor: [colors.purple, colors.grey],
+                borderWidth: 0,
+                hoverOffset: 10
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '75%',
+            plugins: {
+                legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20 } }
+            }
+        }
+    });
+
+    // --- 2. FUNNEL CHART ---
+    new Chart(document.getElementById('chart-funnel'), {
+        type: 'bar',
+        data: {
+            labels: ['View', 'Cart', 'Remove', 'Purchase'],
+            datasets: [{
+                label: 'Event Count',
+                data: funnelData,
+                backgroundColor: [colors.purple, colors.blue, colors.grey, colors.green],
+                borderRadius: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: { type: 'logarithmic', grid: { color: 'rgba(255,255,255,0.05)' } }
+            },
+            plugins: { legend: { display: false } }
+        }
+    });
+
+    // --- 3. TOP 10 CHART ---
+    new Chart(document.getElementById('chart-top10'), {
+        type: 'bar',
+        indexAxis: 'y',
+        data: {
+            labels: top10Labels,
+            datasets: [{
+                label: 'Purchases',
+                data: top10Values,
+                backgroundColor: colors.pink,
+                borderRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } }
+        }
+    });
+
+    // --- 4. HOURLY CHART ---
+    new Chart(document.getElementById('chart-hourly'), {
+        type: 'line',
+        data: {
+            labels: Array.from({length: 24}, (_, i) => i),
+            datasets: [{
+                label: 'Events',
+                data: hourlyData,
+                borderColor: colors.purple,
+                backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                fill: true,
+                tension: 0.4,
+                pointRadius: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: { title: { display: true, text: 'Hour of Day' } }
+            },
+            plugins: { legend: { display: false } }
+        }
+    });
+
+    // --- 5. WEEKDAY CHART ---
+    new Chart(document.getElementById('chart-weekday'), {
+        type: 'bar',
+        data: {
+            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            datasets: [{
+                label: 'Events',
+                data: weekdayData,
+                backgroundColor: colors.purpleFade,
+                borderColor: colors.purple,
+                borderWidth: 1,
+                borderRadius: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } }
+        }
+    });
+
+    // --- 6. MODELING CHART ---
+    new Chart(document.getElementById('chart-model'), {
+        type: 'bar',
+        indexAxis: 'y',
+        data: {
+            labels: featureLabels,
+            datasets: [{
+                label: 'Coefficient',
+                data: featureValues,
+                // Color bars red if negative, blue/green if positive
+                backgroundColor: featureValues.map(v => v < 0 ? colors.red : colors.blue),
+                borderRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { grid: { color: 'rgba(255,255,255,0.1)' } }
+            }
+        }
+    });
+
+    // --- Logic for Tab Switching ---
+    function showSection(id) {
+        document.querySelectorAll('.container').forEach(el => el.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+    }
+
+    // --- Logic for Chart Swapping within Card ---
+    function switchChart(containerId, viewId, title) {
+        const container = document.getElementById(containerId); // e.g. "time"
+
+        // Hide all chart wrappers in this container
+        container.querySelectorAll('.chart-wrapper').forEach(el => el.classList.remove('active'));
+
+        // Show selected wrapper
+        document.getElementById(viewId).classList.add('active');
+
+        // Update Title
+        if(containerId === 'funnel') document.getElementById('funnel-title').innerText = title;
+        if(containerId === 'time') document.getElementById('time-title').innerText = title;
+
+        // Toggle button styling
+        const toggles = container.querySelectorAll('.toggle-option');
+        toggles.forEach(t => t.classList.remove('active'));
+        event.target.classList.add('active');
+    }
+    </script>
+</body>
+</html>
