@@ -53,4 +53,5 @@ In the era of Big Data, traditional mass-marketing strategies struggle to addres
 ##### Prerequisites
 * Python 3.8+
 * Apache Spark 3.0+
-* Google Cloud 
+* GCP
+
